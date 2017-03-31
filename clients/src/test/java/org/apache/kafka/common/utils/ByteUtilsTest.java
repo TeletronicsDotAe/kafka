@@ -191,14 +191,14 @@ public class ByteUtilsTest {
         ByteBuffer buf = ByteBuffer.allocate(32);
         ByteUtils.writeVarint(value, buf);
         buf.flip();
-        assertArrayEquals(expectedEncoding, Utils.toArray(buf));
+        assertArrayEquals(expectedEncoding, Utils.toArray(buf, true));
         assertEquals(value, ByteUtils.readVarint(buf.duplicate()));
 
         buf.rewind();
         DataOutputStream out = new DataOutputStream(new ByteBufferOutputStream(buf));
         ByteUtils.writeVarint(value, out);
         buf.flip();
-        assertArrayEquals(expectedEncoding, Utils.toArray(buf));
+        assertArrayEquals(expectedEncoding, Utils.toArray(buf, true));
         DataInputStream in = new DataInputStream(new ByteBufferInputStream(buf));
         assertEquals(value, ByteUtils.readVarint(in));
     }
@@ -208,13 +208,13 @@ public class ByteUtilsTest {
         ByteUtils.writeVarlong(value, buf);
         buf.flip();
         assertEquals(value, ByteUtils.readVarlong(buf.duplicate()));
-        assertArrayEquals(expectedEncoding, Utils.toArray(buf));
+        assertArrayEquals(expectedEncoding, Utils.toArray(buf, true));
 
         buf.rewind();
         DataOutputStream out = new DataOutputStream(new ByteBufferOutputStream(buf));
         ByteUtils.writeVarlong(value, out);
         buf.flip();
-        assertArrayEquals(expectedEncoding, Utils.toArray(buf));
+        assertArrayEquals(expectedEncoding, Utils.toArray(buf, true));
         DataInputStream in = new DataInputStream(new ByteBufferInputStream(buf));
         assertEquals(value, ByteUtils.readVarlong(in));
     }

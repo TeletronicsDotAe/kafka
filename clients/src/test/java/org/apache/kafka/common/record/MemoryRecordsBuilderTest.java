@@ -264,8 +264,8 @@ public class MemoryRecordsBuilderTest {
     public void testSmallWriteLimit() {
         // with a small write limit, we always allow at least one record to be added
 
-        byte[] key = "foo".getBytes();
-        byte[] value = "bar".getBytes();
+        ByteBuffer key = ByteBuffer.wrap("foo".getBytes());
+        ByteBuffer value = ByteBuffer.wrap("bar".getBytes());
         int writeLimit = 0;
         ByteBuffer buffer = ByteBuffer.allocate(512);
         MemoryRecordsBuilder builder = new MemoryRecordsBuilder(buffer, RecordBatch.CURRENT_MAGIC_VALUE, compressionType,
@@ -284,8 +284,8 @@ public class MemoryRecordsBuilderTest {
         assertEquals(1, records.size());
 
         Record record = records.get(0);
-        assertEquals(ByteBuffer.wrap(key), record.key());
-        assertEquals(ByteBuffer.wrap(value), record.value());
+        assertEquals(key, record.key());
+        assertEquals(value, record.value());
     }
 
     @Test
@@ -300,7 +300,7 @@ public class MemoryRecordsBuilderTest {
         builder.append(0L, "a".getBytes(), "1".getBytes());
         builder.append(1L, "b".getBytes(), "2".getBytes());
 
-        assertFalse(builder.hasRoomFor(2L, "c".getBytes(), "3".getBytes()));
+        assertFalse(builder.hasRoomFor(2L, ByteBuffer.wrap("c".getBytes()), ByteBuffer.wrap("3".getBytes())));
         builder.append(2L, "c".getBytes(), "3".getBytes());
         MemoryRecords records = builder.build();
 

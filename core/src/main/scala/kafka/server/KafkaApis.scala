@@ -1065,7 +1065,7 @@ class KafkaApis(val requestChannel: RequestChannel,
     } else {
       // let the coordinator to handle join-group
       val protocols = joinGroupRequest.groupProtocols().asScala.map(protocol =>
-        (protocol.name, Utils.toArray(protocol.metadata))).toList
+        (protocol.name, Utils.toArray(protocol.metadata, true))).toList
       coordinator.handleJoinGroup(
         joinGroupRequest.groupId,
         joinGroupRequest.memberId,
@@ -1094,7 +1094,7 @@ class KafkaApis(val requestChannel: RequestChannel,
         syncGroupRequest.groupId(),
         syncGroupRequest.generationId(),
         syncGroupRequest.memberId(),
-        syncGroupRequest.groupAssignment().asScala.mapValues(Utils.toArray),
+        syncGroupRequest.groupAssignment().asScala.mapValues((bb: ByteBuffer) => Utils.toArray(bb, true)),
         sendResponseCallback
       )
     }

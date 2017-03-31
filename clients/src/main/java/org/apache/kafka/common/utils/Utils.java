@@ -113,7 +113,7 @@ public class Utils {
         if (buffer.hasArray())
             return new String(buffer.array(), buffer.arrayOffset() + buffer.position() + offset, length, StandardCharsets.UTF_8);
         else
-            return utf8(toArray(buffer, offset, length));
+            return utf8(toArray(buffer, offset, length, true));
     }
 
     /**
@@ -181,8 +181,8 @@ public class Utils {
      * Read the given byte buffer from its current position to its limit into a byte array.
      * @param buffer The buffer to read from
      */
-    public static byte[] toArray(ByteBuffer buffer) {
-        return toArray(buffer, 0, buffer.remaining());
+    public static byte[] toArray(ByteBuffer buffer, boolean backingArrayCanBeUsed) {
+        return toArray(buffer, 0, buffer.remaining(), backingArrayCanBeUsed);
     }
 
     /**
@@ -190,8 +190,8 @@ public class Utils {
      * @param buffer The buffer to convert
      * @return The resulting array or null if the buffer is null
      */
-    public static byte[] toNullableArray(ByteBuffer buffer) {
-        return buffer == null ? null : toArray(buffer);
+    public static byte[] toNullableArray(ByteBuffer buffer, boolean backingArrayCanBeUsed) {
+        return buffer == null ? null : toArray(buffer, backingArrayCanBeUsed);
     }
 
     /**
@@ -209,10 +209,15 @@ public class Utils {
      * @param offset The offset relative to the current position of the buffer
      * @param size The number of bytes to read into the array
      */
-    public static byte[] toArray(ByteBuffer buffer, int offset, int size) {
+    public static byte[] toArray(ByteBuffer buffer, int offset, int size, boolean backingArrayCanBeUsed) {
         byte[] dest = new byte[size];
         if (buffer.hasArray()) {
-            System.arraycopy(buffer.array(), buffer.position() + buffer.arrayOffset() + offset, dest, 0, size);
+            byte[] arr = buffer.array();
+            int arrayStartIndex = buffer.position() + buffer.arrayOffset() + offset;
+            if (backingArrayCanBeUsed && arrayStartIndex == 0 && size == arr.length) {
+                return arr;
+            }
+            System.arraycopy(arr, arrayStartIndex, dest, 0, size);
         } else {
             int pos = buffer.position();
             buffer.position(pos + offset);
@@ -280,8 +285,8 @@ public class Utils {
      * @param data byte array to hash
      * @return 32 bit hash of the given array
      */
-    public static int murmur2(final byte[] data) {
-        int length = data.length;
+    public static int murmur2(final ByteBuffer data) {
+        int length = data.remaining();
         int seed = 0x9747b28c;
         // 'm' and 'r' are mixing constants generated offline.
         // They're not really 'magic', they just happen to work well.
@@ -294,7 +299,7 @@ public class Utils {
 
         for (int i = 0; i < length4; i++) {
             final int i4 = i * 4;
-            int k = (data[i4 + 0] & 0xff) + ((data[i4 + 1] & 0xff) << 8) + ((data[i4 + 2] & 0xff) << 16) + ((data[i4 + 3] & 0xff) << 24);
+            int k = (data.get(i4 + 0) & 0xff) + ((data.get(i4 + 1) & 0xff) << 8) + ((data.get(i4 + 2) & 0xff) << 16) + ((data.get(i4 + 3) & 0xff) << 24);
             k *= m;
             k ^= k >>> r;
             k *= m;
@@ -305,11 +310,11 @@ public class Utils {
         // Handle the last few bytes of the input array
         switch (length % 4) {
             case 3:
-                h ^= (data[(length & ~3) + 2] & 0xff) << 16;
+                h ^= (data.get((length & ~3) + 2) & 0xff) << 16;
             case 2:
-                h ^= (data[(length & ~3) + 1] & 0xff) << 8;
+                h ^= (data.get((length & ~3) + 1) & 0xff) << 8;
             case 1:
-                h ^= data[length & ~3] & 0xff;
+                h ^= data.get(length & ~3) & 0xff;
                 h *= m;
         }
 

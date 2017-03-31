@@ -119,35 +119,53 @@ public class UtilsTest {
     }
 
     @Test
-    public void toArray() {
+    public void toArrayBackingArrayCanBeUsed() {
+        toArray(true);
+    }
+
+    @Test
+    public void toArrayBackingArrayCannotBeUsed() {
+        toArray(false);
+    }
+
+    public void toArray(boolean backingArrayCanBeUsed) {
         byte[] input = {0, 1, 2, 3, 4};
         ByteBuffer buffer = ByteBuffer.wrap(input);
-        assertArrayEquals(input, Utils.toArray(buffer));
+        assertArrayEquals(input, Utils.toArray(buffer, backingArrayCanBeUsed));
         assertEquals(0, buffer.position());
 
-        assertArrayEquals(new byte[] {1, 2}, Utils.toArray(buffer, 1, 2));
+        assertArrayEquals(new byte[] {1, 2}, Utils.toArray(buffer, 1, 2, backingArrayCanBeUsed));
         assertEquals(0, buffer.position());
 
         buffer.position(2);
-        assertArrayEquals(new byte[] {2, 3, 4}, Utils.toArray(buffer));
+        assertArrayEquals(new byte[] {2, 3, 4}, Utils.toArray(buffer, backingArrayCanBeUsed));
         assertEquals(2, buffer.position());
     }
 
     @Test
-    public void toArrayDirectByteBuffer() {
+    public void toArrayDirectByteBufferBackingArrayCanBeUsed() {
+        toArrayDirectByteBuffer(true);
+    }
+
+    @Test
+    public void toArrayDirectByteBufferBackingArrayCannotBeUsed() {
+        toArrayDirectByteBuffer(false);
+    }
+
+    public void toArrayDirectByteBuffer(boolean backingArrayCanBeUsed) {
         byte[] input = {0, 1, 2, 3, 4};
         ByteBuffer buffer = ByteBuffer.allocateDirect(5);
         buffer.put(input);
         buffer.rewind();
 
-        assertArrayEquals(input, Utils.toArray(buffer));
+        assertArrayEquals(input, Utils.toArray(buffer, backingArrayCanBeUsed));
         assertEquals(0, buffer.position());
 
-        assertArrayEquals(new byte[] {1, 2}, Utils.toArray(buffer, 1, 2));
+        assertArrayEquals(new byte[] {1, 2}, Utils.toArray(buffer, 1, 2, backingArrayCanBeUsed));
         assertEquals(0, buffer.position());
 
         buffer.position(2);
-        assertArrayEquals(new byte[] {2, 3, 4}, Utils.toArray(buffer));
+        assertArrayEquals(new byte[] {2, 3, 4}, Utils.toArray(buffer, backingArrayCanBeUsed));
         assertEquals(2, buffer.position());
     }
 

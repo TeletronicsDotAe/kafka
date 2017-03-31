@@ -22,6 +22,7 @@ import org.apache.kafka.common.Node;
 import org.apache.kafka.common.PartitionInfo;
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class DefaultPartitionerTest {
-    private byte[] keyBytes = "key".getBytes();
+    private ByteBuffer keyBytes = ByteBuffer.wrap("key".getBytes());
     private Partitioner partitioner = new DefaultPartitioner();
     private Node node0 = new Node(0, "localhost", 99);
     private Node node1 = new Node(1, "localhost", 100);
@@ -58,7 +59,7 @@ public class DefaultPartitionerTest {
         int countForPart0 = 0;
         int countForPart2 = 0;
         for (int i = 1; i <= 100; i++) {
-            int part = partitioner.partition("test", null, null, null, null, cluster);
+            int part = partitioner.partition("test", null, (ByteBuffer)null, null, (ByteBuffer)null, cluster);
             assertTrue("We should never choose a leader-less node in round robin", part == 0 || part == 2);
             if (part == 0)
                 countForPart0++;
@@ -84,13 +85,13 @@ public class DefaultPartitionerTest {
         final Map<Integer, Integer> partitionCount = new HashMap<>();
 
         for (int i = 0; i < 30; ++i) {
-            int partition = partitioner.partition(topicA, null, null, null, null, testCluster);
+            int partition = partitioner.partition(topicA, null, (ByteBuffer)null, null, (ByteBuffer)null, testCluster);
             Integer count = partitionCount.get(partition);
             if (null == count) count = 0;
             partitionCount.put(partition, count + 1);
 
             if (i % 5 == 0) {
-                partitioner.partition(topicB, null, null, null, null, testCluster);
+                partitioner.partition(topicB, null, (ByteBuffer)null, null, (ByteBuffer)null, testCluster);
             }
         }
 

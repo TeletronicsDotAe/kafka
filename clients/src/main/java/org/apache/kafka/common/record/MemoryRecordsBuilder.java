@@ -527,7 +527,7 @@ public class MemoryRecordsBuilder {
      * the checking should be based on the capacity of the initialized buffer rather than the write limit in order
      * to accept this single record.
      */
-    public boolean hasRoomFor(long timestamp, byte[] key, byte[] value) {
+    public boolean hasRoomFor(long timestamp, ByteBuffer key, ByteBuffer value) {
         if (isFull())
             return false;
 

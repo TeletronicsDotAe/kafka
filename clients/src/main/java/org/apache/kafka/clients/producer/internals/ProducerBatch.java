@@ -73,7 +73,7 @@ public final class ProducerBatch {
      *
      * @return The RecordSend corresponding to this record or null if there isn't sufficient room.
      */
-    public FutureRecordMetadata tryAppend(long timestamp, byte[] key, byte[] value, Callback callback, long now) {
+    public FutureRecordMetadata tryAppend(long timestamp, ByteBuffer key, ByteBuffer value, Callback callback, long now) {
         if (!recordsBuilder.hasRoomFor(timestamp, key, value)) {
             return null;
         } else {
@@ -82,8 +82,8 @@ public final class ProducerBatch {
             this.lastAppendTime = now;
             FutureRecordMetadata future = new FutureRecordMetadata(this.produceFuture, this.recordCount,
                                                                    timestamp, checksum,
-                                                                   key == null ? -1 : key.length,
-                                                                   value == null ? -1 : value.length);
+                                                                   key == null ? -1 : key.remaining(),
+                                                                   value == null ? -1 : value.remaining());
             if (callback != null)
                 thunks.add(new Thunk(callback, future));
             this.recordCount++;

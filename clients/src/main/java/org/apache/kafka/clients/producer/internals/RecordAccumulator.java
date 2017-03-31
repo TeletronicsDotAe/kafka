@@ -167,8 +167,8 @@ public final class RecordAccumulator {
      */
     public RecordAppendResult append(TopicPartition tp,
                                      long timestamp,
-                                     byte[] key,
-                                     byte[] value,
+                                     ByteBuffer key,
+                                     ByteBuffer value,
                                      Callback callback,
                                      long maxTimeToBlock) throws InterruptedException {
         // We keep track of the number of appending thread to make sure we do not miss batches in
@@ -226,7 +226,7 @@ public final class RecordAccumulator {
      * If `ProducerBatch.tryAppend` fails (i.e. the record batch is full), close its memory records to release temporary
      * resources (like compression streams buffers).
      */
-    private RecordAppendResult tryAppend(long timestamp, byte[] key, byte[] value, Callback callback, Deque<ProducerBatch> deque) {
+    private RecordAppendResult tryAppend(long timestamp, ByteBuffer key, ByteBuffer value, Callback callback, Deque<ProducerBatch> deque) {
         ProducerBatch last = deque.peekLast();
         if (last != null) {
             FutureRecordMetadata future = last.tryAppend(timestamp, key, value, callback, time.milliseconds());

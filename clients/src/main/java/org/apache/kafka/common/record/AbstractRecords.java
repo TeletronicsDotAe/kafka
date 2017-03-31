@@ -164,7 +164,7 @@ public abstract class AbstractRecords implements Records {
         return compressionType == CompressionType.NONE ? size : Math.min(Math.max(size / 2, 1024), 1 << 16);
     }
 
-    public static int sizeInBytesUpperBound(byte magic, byte[] key, byte[] value) {
+    public static int sizeInBytesUpperBound(byte magic, ByteBuffer key, ByteBuffer value) {
         if (magic >= RecordBatch.MAGIC_VALUE_V2)
             return DefaultRecordBatch.batchSizeUpperBound(key, value, Record.EMPTY_HEADERS);
         else

@@ -16,7 +16,10 @@
  */
 package org.apache.kafka.common.serialization;
 
+import org.apache.kafka.common.utils.Utils;
+
 import java.io.Closeable;
+import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
@@ -39,10 +42,19 @@ public interface Serializer<T> extends Closeable {
     /**
      * @param topic topic associated with data
      * @param data typed data
+     * @return serialized bytes. Must be ready for read
+     */
+    default public ByteBuffer serializeByteBuffer(String topic, T data) {
+        return Utils.wrapNullable(serialize(topic, data));
+    }
+
+    /**
+     * @param topic topic associated with data
+     * @param data typed data
      * @return serialized bytes
      */
+    @Deprecated
     public byte[] serialize(String topic, T data);
-
 
     /**
      * Close this serializer.

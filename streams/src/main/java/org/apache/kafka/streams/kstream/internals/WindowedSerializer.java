@@ -17,6 +17,7 @@
 package org.apache.kafka.streams.kstream.internals;
 
 import org.apache.kafka.common.config.ConfigException;
+import org.apache.kafka.common.serialization.SerializerByteBufferBase;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.streams.kstream.Windowed;
@@ -30,7 +31,7 @@ import java.util.Map;
  *  if the no-arg constructor is called and hence it is not passed during initialization.
  *  Note that the first two take precedence over the last.
  */
-public class WindowedSerializer<T> implements Serializer<Windowed<T>> {
+public class WindowedSerializer<T> extends SerializerByteBufferBase<Windowed<T>> {
 
     private static final int TIMESTAMP_SIZE = 8;
 
@@ -61,14 +62,14 @@ public class WindowedSerializer<T> implements Serializer<Windowed<T>> {
     }
 
     @Override
-    public byte[] serialize(String topic, Windowed<T> data) {
+    public ByteBuffer serializeByteBuffer(String topic, Windowed<T> data) {
         byte[] serializedKey = inner.serialize(topic, data.key());
 
         ByteBuffer buf = ByteBuffer.allocate(serializedKey.length + TIMESTAMP_SIZE);
         buf.put(serializedKey);
         buf.putLong(data.window().start());
 
-        return buf.array();
+        return buf;
     }
 
     @Override

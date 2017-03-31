@@ -20,6 +20,8 @@ import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.processor.StreamPartitioner;
 
+import java.nio.ByteBuffer;
+
 import static org.apache.kafka.common.utils.Utils.toPositive;
 
 public class WindowedStreamPartitioner<K, V> implements StreamPartitioner<Windowed<K>, V> {
@@ -44,7 +46,7 @@ public class WindowedStreamPartitioner<K, V> implements StreamPartitioner<Window
         byte[] keyBytes = serializer.serializeBaseKey(null, windowedKey);
 
         // hash the keyBytes to choose a partition
-        return toPositive(Utils.murmur2(keyBytes)) % numPartitions;
+        return toPositive(Utils.murmur2(ByteBuffer.wrap(keyBytes))) % numPartitions;
     }
 
 

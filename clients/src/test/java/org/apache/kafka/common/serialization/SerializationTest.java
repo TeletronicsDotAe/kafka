@@ -17,6 +17,7 @@
 package org.apache.kafka.common.serialization;
 
 import org.apache.kafka.common.errors.SerializationException;
+import org.apache.kafka.common.utils.Utils;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
@@ -246,10 +247,10 @@ public class SerializationTest {
         Deserializer<ByteBuffer> deserializer = Serdes.ByteBuffer().deserializer();
 
         assertEquals("Should get the original ByteBuffer after serialization and deserialization",
-              buf, deserializer.deserialize(topic, serializer.serialize(topic, buf)));
+              buf, deserializer.deserialize(topic, Utils.toNullableArray(serializer.serializeByteBuffer(topic, buf), true)));
 
         assertEquals("Should support null in serialization and deserialization",
-                null, deserializer.deserialize(topic, serializer.serialize(topic, null)));
+                null, deserializer.deserialize(topic, Utils.toNullableArray(serializer.serializeByteBuffer(topic, null), true)));
 
         serializer.close();
         deserializer.close();

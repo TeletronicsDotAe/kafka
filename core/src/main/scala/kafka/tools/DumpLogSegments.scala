@@ -264,7 +264,7 @@ object DumpLogSegments {
       val assignment = group.allMemberMetadata.map { member =>
         if (protocolType == ConsumerProtocol.PROTOCOL_TYPE) {
           val partitionAssignment = ConsumerProtocol.deserializeAssignment(ByteBuffer.wrap(member.assignment))
-          val userData = hex(Utils.toArray(partitionAssignment.userData()))
+          val userData = hex(Utils.toArray(partitionAssignment.userData(), true))
 
           if (userData.isEmpty)
             s"${member.memberId}=${partitionAssignment.partitions()}"

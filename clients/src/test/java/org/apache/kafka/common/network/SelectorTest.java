@@ -298,7 +298,7 @@ public class SelectorTest {
     }
 
     protected String asString(NetworkReceive receive) {
-        return new String(Utils.toArray(receive.payload()));
+        return new String(Utils.toArray(receive.payload(), true));
     }
 
     private void sendAndReceive(String node, String requestPrefix, int startIndex, int endIndex) throws Exception {

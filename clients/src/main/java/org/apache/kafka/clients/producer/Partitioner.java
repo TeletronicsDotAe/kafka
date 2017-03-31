@@ -18,8 +18,10 @@ package org.apache.kafka.clients.producer;
 
 import org.apache.kafka.common.Configurable;
 import org.apache.kafka.common.Cluster;
+import org.apache.kafka.common.utils.Utils;
 
 import java.io.Closeable;
+import java.nio.ByteBuffer;
 
 /**
  * Partitioner Interface
@@ -32,11 +34,26 @@ public interface Partitioner extends Configurable, Closeable {
      *
      * @param topic The topic name
      * @param key The key to partition on (or null if no key)
+     * @param keyBytes The serialized key to partition on (or null if no key)
+     * @param value The value to partition on or null
+     * @param valueBytes The serialized value to partition on or null
+     * @param cluster The current cluster metadata
+     */
+    default public int partition(String topic, Object key, ByteBuffer keyBytes, Object value, ByteBuffer valueBytes, Cluster cluster) {
+        return partition(topic, key, Utils.toNullableArray(keyBytes, true), value, Utils.toNullableArray(valueBytes, true), cluster);
+    }
+
+    /**
+     * Compute the partition for the given record.
+     *
+     * @param topic The topic name
+     * @param key The key to partition on (or null if no key)
      * @param keyBytes The serialized key to partition on( or null if no key)
      * @param value The value to partition on or null
      * @param valueBytes The serialized value to partition on or null
      * @param cluster The current cluster metadata
      */
+    @Deprecated
     public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster);
 
     /**

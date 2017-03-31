@@ -16,13 +16,14 @@
  */
 package org.apache.kafka.test;
 
+import org.apache.kafka.clients.producer.ByteBufferPartitionerBase;
 import org.apache.kafka.common.Cluster;
-import org.apache.kafka.clients.producer.Partitioner;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MockPartitioner implements Partitioner {
+public class MockPartitioner extends ByteBufferPartitionerBase {
     public static final AtomicInteger INIT_COUNT = new AtomicInteger(0);
     public static final AtomicInteger CLOSE_COUNT = new AtomicInteger(0);
 
@@ -35,7 +36,7 @@ public class MockPartitioner implements Partitioner {
     }
 
     @Override
-    public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
+    public int partition(String topic, Object key, ByteBuffer keyBytes, Object value, ByteBuffer valueBytes, Cluster cluster) {
         return 0;
     }
 

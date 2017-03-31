@@ -148,9 +148,9 @@ public class MemoryRecordsTest {
         MemoryRecordsBuilder builder = MemoryRecords.builder(ByteBuffer.allocate(1024), magic, compression,
                 TimestampType.CREATE_TIME, 0L);
         builder.append(0L, "a".getBytes(), "1".getBytes());
-        assertTrue(builder.hasRoomFor(1L, "b".getBytes(), "2".getBytes()));
+        assertTrue(builder.hasRoomFor(1L, ByteBuffer.wrap("b".getBytes()), ByteBuffer.wrap("2".getBytes())));
         builder.close();
-        assertFalse(builder.hasRoomFor(1L, "b".getBytes(), "2".getBytes()));
+        assertFalse(builder.hasRoomFor(1L, ByteBuffer.wrap("b".getBytes()), ByteBuffer.wrap("2".getBytes())));
     }
 
     /**

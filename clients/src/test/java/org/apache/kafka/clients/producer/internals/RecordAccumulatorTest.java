@@ -68,8 +68,8 @@ public class RecordAccumulatorTest {
     private PartitionInfo part2 = new PartitionInfo(topic, partition2, node1, null, null);
     private PartitionInfo part3 = new PartitionInfo(topic, partition3, node2, null, null);
     private MockTime time = new MockTime();
-    private byte[] key = "key".getBytes();
-    private byte[] value = "value".getBytes();
+    private ByteBuffer key = ByteBuffer.wrap("key".getBytes());
+    private ByteBuffer value = ByteBuffer.wrap("value".getBytes());
     private int msgSize = DefaultRecord.sizeInBytes(0, 0, key, value);
     private Cluster cluster = new Cluster(null, Arrays.asList(node1, node2), Arrays.asList(part1, part2, part3),
             Collections.<String>emptySet(), Collections.<String>emptySet());
@@ -119,8 +119,8 @@ public class RecordAccumulatorTest {
         Iterator<Record> iter = batch.records().records().iterator();
         for (int i = 0; i < appends; i++) {
             Record record = iter.next();
-            assertEquals("Keys should match", ByteBuffer.wrap(key), record.key());
-            assertEquals("Values should match", ByteBuffer.wrap(value), record.value());
+            assertEquals("Keys should match", key, record.key());
+            assertEquals("Values should match", value, record.value());
         }
         assertFalse("No more records", iter.hasNext());
     }
@@ -130,7 +130,7 @@ public class RecordAccumulatorTest {
         int batchSize = 512;
         RecordAccumulator accum = new RecordAccumulator(batchSize + DefaultRecordBatch.RECORD_BATCH_OVERHEAD, 10 * 1024,
                 CompressionType.NONE, 0L, 100L, metrics, time, new ApiVersions());
-        accum.append(tp1, 0L, key, new byte[2 * batchSize], null, maxBlockTimeMs);
+        accum.append(tp1, 0L, key, ByteBuffer.wrap(new byte[2 * batchSize]), null, maxBlockTimeMs);
         assertEquals("Our partition's leader should be ready", Collections.singleton(node1), accum.ready(cluster, time.milliseconds()).readyNodes);
     }
 
@@ -149,8 +149,8 @@ public class RecordAccumulatorTest {
 
         Iterator<Record> iter = batch.records().records().iterator();
         Record record = iter.next();
-        assertEquals("Keys should match", ByteBuffer.wrap(key), record.key());
-        assertEquals("Values should match", ByteBuffer.wrap(value), record.value());
+        assertEquals("Keys should match", key, record.key());
+        assertEquals("Values should match", value, record.value());
         assertFalse("No more records", iter.hasNext());
     }
 

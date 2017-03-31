@@ -27,6 +27,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.record.RecordBatch;
 import org.apache.kafka.common.serialization.Serializer;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -223,8 +224,8 @@ public class MockProducer<K, V> implements Producer<K, V> {
                                                    + "].");
             return partition;
         }
-        byte[] keyBytes = keySerializer.serialize(topic, record.key());
-        byte[] valueBytes = valueSerializer.serialize(topic, record.value());
+        ByteBuffer keyBytes = keySerializer.serializeByteBuffer(topic, record.key());
+        ByteBuffer valueBytes = valueSerializer.serializeByteBuffer(topic, record.value());
         return this.partitioner.partition(topic, record.key(), keyBytes, record.value(), valueBytes, cluster);
     }
 

@@ -839,10 +839,10 @@ public class Fetcher<K, V> implements SubscriptionState.Listener, Closeable {
             long timestamp = record.timestamp();
             TimestampType timestampType = batch.timestampType();
             ByteBuffer keyBytes = record.key();
-            byte[] keyByteArray = keyBytes == null ? null : Utils.toArray(keyBytes);
+            byte[] keyByteArray = keyBytes == null ? null : Utils.toArray(keyBytes, true);
             K key = keyBytes == null ? null : this.keyDeserializer.deserialize(partition.topic(), keyByteArray);
             ByteBuffer valueBytes = record.value();
-            byte[] valueByteArray = valueBytes == null ? null : Utils.toArray(valueBytes);
+            byte[] valueByteArray = valueBytes == null ? null : Utils.toArray(valueBytes, true);
             V value = valueBytes == null ? null : this.valueDeserializer.deserialize(partition.topic(), valueByteArray);
 
             return new ConsumerRecord<>(partition.topic(), partition.partition(), offset,
